@@ -1,3 +1,4 @@
+import Footer from './components/Footer'
 import PasteArea from './components/Form/Snippet'
 import Header from './components/Header'
 import Hero from './components/Hero'
@@ -14,6 +15,7 @@ function App() {
       <Steps />
       <PasteArea />
       </div>
+      <Footer />
     </>
   )
 }

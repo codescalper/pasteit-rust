@@ -7,8 +7,8 @@
     import { useTheme } from 'next-themes';
     import { Button as But } from '@nextui-org/react';
 
-    export default function PasteArea({ snippet = null }) {
-    const [selectedLanguage, setSelectedLanguage] = useState("Plain Text"); 
+    export default function PasteArea() {
+    const [selectedLanguage, setSelectedLanguage] = useState(new Set(["Plain text"])); 
     const [code, setCode] = useState(''); 
 
     const selectedValue = useMemo(
@@ -18,39 +18,39 @@
 
     const languages = [
         {
-        name: 'Plain Text',
+        name: 'plaintext',
         value: 'plaintext',
         },
         {
-        name: 'JavaScript',
+        name: 'javascript',
         value: 'javascript',
         },
         {
-        name: 'TypeScript',
+        name: 'typescript',
         value: 'typescript',
         },
         {
-        name: 'Rust',
+        name: 'rust',
         value: 'rust',
         },
         {
-        name: 'Python',
+        name: 'python',
         value: 'python',
         },
         {
-        name: 'Java',
+        name: 'java',
         value: 'java',
         },
         {
-        name: 'C',
+        name: 'c',
         value: 'c',
         },
         {
-        name: 'C++',
+        name: 'cpp',
         value: 'cpp',
         },
         {
-        name: 'C#',
+        name: 'csharp',
         value: 'csharp',
         },
     ];
@@ -61,31 +61,25 @@
         }
     };
 
-    // Obtain the current theme
     const { theme } = useTheme();
-
+    const selectedLanguageArray = Array.from(selectedLanguage);
+    const selectedLanguageName = selectedLanguageArray[0];
     const handleCreateSnippet = () => {
-
-        console.log("Selected Language:", selectedLanguage);
+        console.log("Selected Language:", selectedLanguageName);
         console.log("Code:", code);
-    };
+      };
 
-    const selectedV = languages.findIndex((lang) => lang.name ===selectedLanguage.currentKey)
-
-      
-
-    
     return (
         <div className="gradient-border flex justify-center items-center">
         <form action="#" className="relative w-full">
             <div className="border border-gray-300 dark:border-zinc-600 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 bg-white dark:bg-zinc-800 dark:text-gray-100">
             <Editor
                 height="350px"
-                language={languages[selectedV].value}
+                language={selectedLanguageName} 
                 theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 value={code}
                 options={{
-                readOnly: !!snippet,
+                // readOnly: !!snippet,
                 minimap: {
                     enabled: false,
                 },
@@ -130,7 +124,7 @@
                     disallowEmptySelection
                     selectionMode="single"
                     selectedKeys={selectedLanguage}
-                    onSelectionChange={setSelectedLanguage}
+                    onSelectionChange={(value) => setSelectedLanguage(value)}
                 >
                     {languages.map((lang) => (
                     <DropdownItem key={lang.name} value={lang.value}>
