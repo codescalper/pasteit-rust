@@ -26,3 +26,15 @@
     }
   }
   
+
+  /* For dark theme */
+.dark-glow {
+  /* Dark theme glow styles go here */
+  filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.7)); /* Orange glow effect */
+}
+
+/* For light theme */
+.light-glow {
+  /* Light theme glow styles go here */
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.7)); /* Red glow effect */
+}

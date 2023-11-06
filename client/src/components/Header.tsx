@@ -1,4 +1,3 @@
-import React from 'react';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa'; 
 

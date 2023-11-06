@@ -10,13 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
     "@nextui-org/react": "^2.2.2",
     "canvas-confetti": "^1.9.0",
     "framer-motion": "^10.16.4",
     "next-themes": "^0.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.11.0"
+    "react-icons": "^4.11.0",
+    "react-toastify": "^9.1.3"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.2",

@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react"
 import { AiOutlineRight } from "react-icons/ai"
 import confetti from 'canvas-confetti';
-
+import { IconContext } from "react-icons";
 
  
 
@@ -19,11 +19,16 @@ const Steps = () => {
         <div></div>
         <div className="flex items-center justify-around space-x-2 col-span-4">
           Paste
-          <AiOutlineRight width={40} />
+          <IconContext.Provider value={{ className: "text-purple-500 dark:text-yellow-500 text-xl " }}>
+            <AiOutlineRight width={40} />
+          </IconContext.Provider>
         </div>
         <div className="flex items-center justify-around space-x-2 col-span-4">
           Create
-          <AiOutlineRight width={40} />
+          <IconContext.Provider value={{ className: "text-purple-500 dark:text-yellow-500 text-xl " }}>
+            <AiOutlineRight width={40} />
+          </IconContext.Provider>
+
         </div>
         <div className="flex items-center justify-around space-x-2">
           <div className="flex justify-center items-center ">
