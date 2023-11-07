@@ -4,12 +4,20 @@ use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use rusqlite::{params, Connection};
+use serde_json::json;
 use std::sync::Mutex;
+
 struct AppState {
     db: Mutex<Connection>,
 }
 
-async fn submit(content: web::Form<FormData>, data: web::Data<AppState>) -> impl Responder {
+#[derive(serde::Deserialize)]
+struct FormData {
+    code: String,
+    selectedLanguageName: String,
+}
+
+async fn submit(content: web::Json<FormData>, data: web::Data<AppState>) -> impl Responder {
     let token: String = thread_rng()
         .sample_iter(&Alphanumeric)
         .take(10)
@@ -18,39 +26,35 @@ async fn submit(content: web::Form<FormData>, data: web::Data<AppState>) -> impl
 
     let conn = data.db.lock().unwrap();
     conn.execute(
-        "INSERT INTO pastes (token, content) VALUES (?, ?)",
-        params![&token, &content.content],
+        "INSERT INTO pastes (token, code, selectedLanguageName) VALUES (?, ?, ?)",
+        params![&token, &content.code, &content.selectedLanguageName],
     )
     .expect("Failed to insert into database");
 
-    HttpResponse::SeeOther()
-        .append_header(("Location", format!("/paste/{}", token)))
-        .finish()
+    HttpResponse::Ok().json(json!({"token": format!("/paste/{}", token)}))
 }
 
 async fn get_paste(token: web::Path<String>, data: web::Data<AppState>) -> impl Responder {
     let conn = data.db.lock().unwrap();
-    let content = conn
+    let (code, selectedLanguageName) = conn
         .query_row(
-            "SELECT content FROM pastes WHERE token = ?",
+            "SELECT code, selectedLanguageName FROM pastes WHERE token = ?",
             params![token.to_string()],
-            |row| row.get::<_, String>(0),
+            |row| Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?)),
         )
-        .unwrap_or_else(|_| "Paste not found".to_string());
+        .unwrap_or_else(|_| ("Paste not found".to_string(), "Paste not found".to_string()));
 
-    HttpResponse::Ok().body(format!("<pre>{}</pre>", content))
-}
-
-#[derive(serde::Deserialize)]
-struct FormData {
-    content: String,
+    HttpResponse::Ok().body(format!(
+        "<pre>Code: {}\nSelected Language: {}</pre>",
+        code, selectedLanguageName
+    ))
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let db = Connection::open("pastes.db").expect("Failed to open database");
     db.execute(
-        "CREATE TABLE IF NOT EXISTS pastes (token TEXT PRIMARY KEY, content TEXT)",
+        "CREATE TABLE IF NOT EXISTS pastes (token TEXT PRIMARY KEY, code TEXT, selectedLanguageName TEXT)",
         params![],
     )
     .expect("Failed to create table");
@@ -66,7 +70,7 @@ async fn main() -> std::io::Result<()> {
             .route("/submit", web::post().to(submit))
             .route("/paste/{token}", web::get().to(get_paste))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(("127.0.0.1", 80))?
     .run()
     .await
 }
