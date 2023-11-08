@@ -49,11 +49,13 @@ useEffect(() => {
   }  
 
   const handleCopyLink = () => {
-    toast('Link Copied')
+    toast('Link copied to clipboard')
     navigator.clipboard.writeText(window.location.href);
   }
 
   const handleCopyCode = () => {
+    toast('Code copied to clipboard')
+    navigator.clipboard.writeText(code);
   }
 
 
