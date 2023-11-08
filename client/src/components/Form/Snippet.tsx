@@ -6,7 +6,7 @@
     import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
     import { useTheme } from 'next-themes';
     import { Button as But } from '@nextui-org/react';
-
+    import axios from 'axios';
     export default function PasteArea() {
     const [selectedLanguage, setSelectedLanguage] = useState(new Set(["Plain text"])); 
     const [code, setCode] = useState(''); 
@@ -65,6 +65,17 @@
     const selectedLanguageArray = Array.from(selectedLanguage);
     const selectedLanguageName = selectedLanguageArray[0];
     const handleCreateSnippet = () => {
+        const content = code;
+        axios.post('http://localhost:8080/submit', {
+            content,
+            selected_language: selectedLanguageName,
+          })
+            .then(response => {
+              console.log('Snippet created:', response.data);
+            })
+            .catch(error => {
+              console.error('Error creating snippet:', error);
+            });
         console.log("Selected Language:", selectedLanguageName);
         console.log("Code:", code);
       };
