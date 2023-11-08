@@ -30,7 +30,7 @@ export default function Footer() {
           <FaTwitter className="text-gray-500 hover:text-blue-500" size={24} />
         </a>
         <a
-          href="https://github.com/codescalper/threadX"
+          href="https://github.com/codescalper/pasteit-rust"
          
         >
           <FaGithub className="text-gray-500 hover:text-green-500" size={24} />
