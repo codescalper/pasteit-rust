@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_files::NamedFile;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use rand::distributions::Alphanumeric;
@@ -74,7 +75,14 @@ async fn main() -> std::io::Result<()> {
     let app_state = web::Data::new(AppState { db: Mutex::new(db) });
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:5173")
+            .allowed_origin("http://localhost:5173")
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+            .allow_any_header()
+            .max_age(3600);
         App::new()
+            .wrap(cors)
             .app_data(app_state.clone())
             // .service(web::resource("/style.css").to(|| async { NamedFile::open("src/style.css") }))
             // .route("/", web::get().to(index))
