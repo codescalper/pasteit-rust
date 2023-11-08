@@ -8,11 +8,29 @@ import 'react-simple-toasts/dist/theme/ocean-wave.css';
 import { AiOutlineGithub } from 'react-icons/ai';
 import { BsShareFill } from 'react-icons/bs';
 import toast, { toastConfig } from 'react-simple-toasts';
+import axios from 'axios';
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
+
 function Success() {
   const { theme } = useTheme();
+  const [code, setCode] = useState('');
+  const [language, setLanguage] = useState('');
   toastConfig({
   theme: 'ocean-wave',
 });
+const { token } = useParams();
+console.log(token)
+
+useEffect(() => {
+    const fetchSnippet = async () => {
+      const response = await axios.get(`http://localhost:8080/paste/${token}`);
+      setCode(response.data.content); 
+      setLanguage(response.data.selected_language);
+    }
+    fetchSnippet();
+  }, [token])
+
 
   const  handleShare = async () => {
     if (navigator.share) {
@@ -58,9 +76,9 @@ function Success() {
             <div className="border border-gray-300 dark:border-zinc-600 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 bg-white dark:bg-zinc-800 dark:text-gray-100">
             <Editor
                 height="350px"
-                language={'javascript'} 
+                language={language} 
                 theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                value={'console.log("Hello World")'}
+                value={code}
                 options={{
                 readOnly: true,
                 minimap: {
