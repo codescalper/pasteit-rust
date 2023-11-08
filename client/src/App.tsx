@@ -1,23 +1,20 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Footer from './components/Footer'
 import PasteArea from './components/Form/Snippet'
-import Header from './components/Header'
-import Hero from './components/Hero'
-import Steps from './components/Steps'
+import Success from './components/Form/Success' 
 
 function App() {
-
-
   return (
     <>
-      <Header />      
-      <Hero />  
-      <div className="container mx-auto px-4 lg:w-2/4 my-24">
-      <Steps />
-      <PasteArea />
-      </div>
-      <Footer />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<PasteArea />} />
+          <Route path="/snippet/:token" element={<Success />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
     </>
   )
 }
 
-export default App
+export default App;

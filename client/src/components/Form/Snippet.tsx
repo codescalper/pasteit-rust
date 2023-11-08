@@ -1,16 +1,23 @@
     /* eslint-disable @typescript-eslint/no-unused-vars */
-    import { BsCodeSlash } from 'react-icons/bs';
-    import { HiMiniArrowUpTray } from "react-icons/hi2";
-    import Editor from '@monaco-editor/react';
-    import { useMemo, useState } from 'react';
-    import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-    import { useTheme } from 'next-themes';
-    import { Button as But } from '@nextui-org/react';
-    import axios from 'axios';
+import { BsCodeSlash } from 'react-icons/bs';
+import { HiMiniArrowUpTray } from "react-icons/hi2";
+import Editor from '@monaco-editor/react';
+import { useMemo, useState } from 'react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import { useTheme } from 'next-themes';
+import { Button as But } from '@nextui-org/react';
+import axios from 'axios';
+import { useNavigate  } from 'react-router-dom';
+import Header from '../Header';
+import Hero from '../Hero';
+import Steps from '../Steps';
+
+
     export default function PasteArea() {
+        
     const [selectedLanguage, setSelectedLanguage] = useState(new Set(["Plain text"])); 
     const [code, setCode] = useState(''); 
-
+    const navigate = useNavigate();
     const selectedValue = useMemo(
         () => selectedLanguage,
         [selectedLanguage]
@@ -71,7 +78,9 @@
             selected_language: selectedLanguageName,
           })
             .then(response => {
+              const token = response.data.token;
               console.log('Snippet created:', response.data);
+              navigate(`/snippet/${token}`);  
             })
             .catch(error => {
               console.error('Error creating snippet:', error);
@@ -79,10 +88,15 @@
         console.log("Selected Language:", selectedLanguageName);
         console.log("Code:", code);
       };
+      
 
     return (
-        <div className="gradient-border flex justify-center items-center">
-        <form action="#" className="relative w-full">
+        <div>
+        <Header />      
+        <Hero />
+        <Steps />
+        <div className="flex justify-center items-center">
+        <form action="#" className="xl:w-1/2 mx-auto relative w-3/4">
             <div className="border border-gray-300 dark:border-zinc-600 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 bg-white dark:bg-zinc-800 dark:text-gray-100">
             <Editor
                 height="350px"
@@ -155,6 +169,7 @@
             </div>
             </div>
         </form>
+        </div>
         </div>
     );
     }
