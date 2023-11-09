@@ -74,7 +74,7 @@ import Footer from '../Footer';
     const selectedLanguageName = selectedLanguageArray[0];
     const handleCreateSnippet = () => {
         const content = code;
-        axios.post('http://localhost:8080/submit', {
+        axios.post('http://localhost:8081/submit', {
             content,
             selected_language: selectedLanguageName,
           })

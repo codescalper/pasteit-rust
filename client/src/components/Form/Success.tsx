@@ -24,7 +24,7 @@ console.log(token)
 
 useEffect(() => {
     const fetchSnippet = async () => {
-      const response = await axios.get(`http://localhost:8080/paste/${token}`);
+      const response = await axios.get(`http://localhost:8081/paste/${token}`);
       setCode(response.data.content); 
       setLanguage(response.data.selected_language);
     }
