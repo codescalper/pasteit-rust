@@ -1,19 +1,15 @@
 use actix_cors::Cors;
-use actix_files::NamedFile;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use dotenv::dotenv;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
-use rusqlite::{params, Connection};
 use serde_json::json;
+use sqlx::postgres::PgPoolOptions;
 use std::collections::HashMap;
 use std::sync::Mutex;
 struct AppState {
-    db: Mutex<Connection>,
+    db: Mutex<sqlx::PgPool>,
 }
-
-// async fn index() -> impl Responder {
-//     HttpResponse::Ok().body(include_str!("index.html"))
-// }
 
 async fn submit(content: web::Json<FormData>, data: web::Data<AppState>) -> impl Responder {
     let token: String = thread_rng()
@@ -29,10 +25,13 @@ async fn submit(content: web::Json<FormData>, data: web::Data<AppState>) -> impl
     let paste_json = serde_json::to_string(&paste).unwrap();
 
     let conn = data.db.lock().unwrap();
-    conn.execute(
-        "INSERT INTO pastes (token, content) VALUES (?, ?)",
-        params![&token, &paste_json],
+    sqlx::query!(
+        "INSERT INTO pastes (token, content) VALUES ($1, $2)",
+        &token,
+        &paste_json
     )
+    .execute(&*conn)
+    .await
     .expect("Failed to insert into database");
 
     // Return the token in JSON format
@@ -43,15 +42,17 @@ async fn submit(content: web::Json<FormData>, data: web::Data<AppState>) -> impl
 
 async fn get_paste(token: web::Path<String>, data: web::Data<AppState>) -> impl Responder {
     let conn = data.db.lock().unwrap();
-    let paste = conn
-        .query_row(
-            "SELECT content FROM pastes WHERE token = ?",
-            params![token.to_string()],
-            |row| row.get::<_, String>(0),
-        )
-        .unwrap_or_else(|_| "Paste not found".to_string());
+    let paste = sqlx::query!(
+        "SELECT content FROM pastes WHERE token = $1",
+        token.to_string()
+    )
+    .fetch_one(&*conn)
+    .await
+    .map(|row| row.content)
+    .unwrap_or_else(|_| Some("Paste not found".to_string()));
 
-    let paste_data: HashMap<String, String> = serde_json::from_str(&paste).unwrap();
+    let paste_data: HashMap<String, String> =
+        serde_json::from_str(paste.as_ref().unwrap_or(&"".to_string())).unwrap();
     HttpResponse::Ok()
         .content_type("application/json")
         .body(json!(paste_data).to_string())
@@ -65,12 +66,13 @@ struct FormData {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let db = Connection::open("pastes.db").expect("Failed to open database");
-    db.execute(
-        "CREATE TABLE IF NOT EXISTS pastes (token TEXT PRIMARY KEY, content TEXT)",
-        params![],
-    )
-    .expect("Failed to create table");
+    dotenv().ok();
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not set");
+    let db = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("Failed to connect to database");
 
     let app_state = web::Data::new(AppState { db: Mutex::new(db) });
 
@@ -84,8 +86,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(app_state.clone())
-            // .service(web::resource("/style.css").to(|| async { NamedFile::open("src/style.css") }))
-            // .route("/", web::get().to(index))
             .route("/submit", web::post().to(submit))
             .route("/paste/{token}", web::get().to(get_paste))
     })
