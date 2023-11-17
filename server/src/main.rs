@@ -49,10 +49,11 @@ async fn get_paste(token: web::Path<String>, data: web::Data<AppState>) -> impl 
     .fetch_one(&*conn)
     .await
     .map(|row| row.content)
-    .unwrap_or_else(|_| Some("Paste not found".to_string()));
+    .unwrap_or("Paste not found".to_string());
 
     let paste_data: HashMap<String, String> =
-        serde_json::from_str(paste.as_ref().unwrap_or(&"".to_string())).unwrap();
+        serde_json::from_str(&paste).unwrap_or(HashMap::new());
+
     HttpResponse::Ok()
         .content_type("application/json")
         .body(json!(paste_data).to_string())
@@ -76,7 +77,7 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = web::Data::new(AppState { db: Mutex::new(db) });
 
-    HttpServer::new(move || {
+    let server = HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:5173")
             .allowed_origin("http://localhost:5173")
@@ -89,7 +90,9 @@ async fn main() -> std::io::Result<()> {
             .route("/submit", web::post().to(submit))
             .route("/paste/{token}", web::get().to(get_paste))
     })
-    .bind("0.0.0.0:8080")?
-    .run()
-    .await
+    .bind("http://0.0.0.0:8080")?;
+
+    println!("Server is listening on http://0.0.0.0:8080");
+
+    server.run().await
 }

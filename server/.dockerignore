@@ -1,0 +1,7 @@
+.env
+.git 
+target/
+Dockerfile
+.vs
+Cargo.lock
+.dockerignore
