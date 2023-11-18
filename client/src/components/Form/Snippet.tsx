@@ -1,8 +1,8 @@
-    /* eslint-disable @typescript-eslint/no-unused-vars */
+     
 import { BsCodeSlash } from 'react-icons/bs';
 import { HiMiniArrowUpTray } from "react-icons/hi2";
 import Editor from '@monaco-editor/react';
-import { useMemo, useState } from 'react';
+import { SetStateAction, useMemo, useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { useTheme } from 'next-themes';
 import { Button as But } from '@nextui-org/react';
@@ -12,15 +12,17 @@ import Header from '../Header';
 import Hero from '../Hero';
 import Steps from '../Steps';
 import Footer from '../Footer';
+import {Selection} from "@react-types/shared";
+
+
 
 
     export default function PasteArea() {
-        
-    const [selectedLanguage, setSelectedLanguage] = useState(new Set(["Plain text"])); 
+    const [selectedLanguage, setSelectedLanguage] = useState<Selection>(new Set(["Plain text"])); 
     const [code, setCode] = useState(''); 
     const navigate = useNavigate();
     const selectedValue = useMemo(
-        () => selectedLanguage,
+        () => Array.from(selectedLanguage)[0],
         [selectedLanguage]
     );
 
@@ -62,19 +64,26 @@ import Footer from '../Footer';
         value: 'csharp',
         },
     ];
-
-    const onChange = (key, value) => {
+    const onChange = (key: string, value: SetStateAction<string> | undefined = '') => {
         if (key === 'code') {
-        setCode(value); 
+            if (typeof value === 'string') {
+                setCode(value);
+            } else if (typeof value === 'function') {
+                // If it's a function, assume it's a state updater function
+                setCode((prevCode) => value(prevCode));
+            }
+            // You can add additional handling for other cases if needed
         }
     };
+    
 
     const { theme } = useTheme();
     const selectedLanguageArray = Array.from(selectedLanguage);
     const selectedLanguageName = selectedLanguageArray[0];
     const handleCreateSnippet = () => {
         const content = code;
-        axios.post('http://localhost:8081/submit', {
+
+        axios.post(`https://pasteit.onrender.com/submit`, {
             content,
             selected_language: selectedLanguageName,
           })
@@ -101,7 +110,7 @@ import Footer from '../Footer';
             <div className="border border-gray-300 dark:border-zinc-600 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 bg-white dark:bg-zinc-800 dark:text-gray-100">
             <Editor
                 height="350px"
-                language={selectedLanguageName} 
+                language={String(selectedLanguageName)}
                 theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 value={code}
                 options={{
@@ -141,7 +150,7 @@ import Footer from '../Footer';
                     variant="bordered"
                     className="capitalize"
                     >
-                    <BsCodeSlash /> {selectedValue}
+                    <BsCodeSlash /> {selectedValue.toString()}
                     </But>
                 </DropdownTrigger>
                 <DropdownMenu
@@ -150,7 +159,7 @@ import Footer from '../Footer';
                     disallowEmptySelection
                     selectionMode="single"
                     selectedKeys={selectedLanguage}
-                    onSelectionChange={(value) => setSelectedLanguage(value)}
+                    onSelectionChange={setSelectedLanguage}
                 >
                     {languages.map((lang) => (
                     <DropdownItem key={lang.name} value={lang.value}>
