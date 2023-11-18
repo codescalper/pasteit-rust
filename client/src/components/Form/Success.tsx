@@ -23,13 +23,16 @@ const { token } = useParams();
 console.log(token)
 
 useEffect(() => {
-    const fetchSnippet = async () => {
-      const response = await axios.get(`https://pasteit.onrender.com/paste/${token}`);
-      setCode(response.data.content); 
-      setLanguage(response.data.selected_language);
-    }
+  const fetchSnippet = async () => {
+    const response = await axios.get(`https://pasteit.onrender.com/paste/${token}`);
+    setCode(response.data.content);
+    setLanguage(response.data.selected_language);
+  };
+
+  if (token) {
     fetchSnippet();
-  }, [token])
+  }
+}, [token]);
 
 
   const handleShare = async () => {
