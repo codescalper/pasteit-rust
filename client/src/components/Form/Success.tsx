@@ -33,39 +33,7 @@ useEffect(() => {
 
 
   const handleShare = async () => {
-    const shareData = {
-      title: 'Snippet from my PasteIt',
-      text: 'Here is a code snippet',
-      url: window.location.href,
-    };
-  
-    const shareViaEmail = () => {
-      window.location.href = `mailto:?subject=${shareData.title}&body=${shareData.text}%0A%0A${shareData.url}`;
-    };
-  
-    const shareViaTwitter = () => {
-      window.open(`https://twitter.com/intent/tweet?text=${shareData.text}&url=${shareData.url}`, '_blank');
-    };
-  
-    const shareViaWhatsApp = () => {
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareData.text + '\n\n' + shareData.url)}`, '_blank');
-    };
-  
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        console.error('There was an error sharing:', err);
-      }
-    } else {
-      console.log('Web Share API is not supported in your browser.');
-      // Provide fallback options
-      // You can customize this based on your requirements
-      // For example, you can show icons/buttons for Gmail, Twitter, and WhatsApp
-      shareViaEmail();
-      shareViaTwitter();
-      shareViaWhatsApp();
-    }
+ 
   };
   
 

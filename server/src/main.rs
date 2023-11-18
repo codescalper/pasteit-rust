@@ -77,10 +77,10 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = web::Data::new(AppState { db: Mutex::new(db) });
 
-    let server = HttpServer::new(move || {
+    HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:5173")
-            .allowed_origin("http://localhost:5173")
+            .allowed_origin("https://pasteit.10xeng.xyz")
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
             .allow_any_header()
             .max_age(3600);
@@ -90,9 +90,7 @@ async fn main() -> std::io::Result<()> {
             .route("/submit", web::post().to(submit))
             .route("/paste/{token}", web::get().to(get_paste))
     })
-    .bind("http://0.0.0.0:8080")?;
-
-    println!("Server is listening on http://0.0.0.0:8080");
-
-    server.run().await
+    .bind("0.0.0.0:8080")?
+    .run()
+    .await
 }
