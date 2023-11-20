@@ -1,6 +1,6 @@
 ## PasteIt
 
-<p align="center"> <a href=https://github.com/codescalper/pasteit-rust target="_blank"> <img src="https://cdn.discordapp.com/attachments/1174724064338772078/1176132879646986261/image.png?ex=656dc21a&is=655b4d1a&hm=f3d3996aa09fea2da9d52616ad4d761bed683095fe3c5b212d9c3f9c66d45299&" width="100%" alt="Banner" /> </a> </p>
+<p align="center"> <a href=https://github.com/codescalper/pasteit-rust target="_blank"> <img src="https://cdn.discordapp.com/attachments/1174724064338772078/1176154898417586248/My_Video_1-min.gif?ex=656dd69b&is=655b619b&hm=a945048d36f0e1cf32bcdbd6ca27058f8d560297fe4e5e8af6bf1726e9c126bd&" width="100%" alt="Banner" /> </a> </p>
 
 <p align="center"> <img src="https://img.shields.io/github/languages/code-size/codescalper/pasteit-rust" alt="GitHub code size in bytes" /> <img src="https://img.shields.io/github/last-commit/codescalper/pasteit-rust" alt="GitHub last commit" /> <img src="https://img.shields.io/github/commit-activity/m/codescalper/pasteit-rust" alt="GitHub commit activity month" /> <img src="https://img.shields.io/github/license/codescalper/pasteit-rust" alt="GitHub license" /> </p> <p></p> <p></p>
 
