@@ -4,7 +4,7 @@ FROM rust:latest as build
 WORKDIR /usr/src/paste-it
 COPY . .
 
-ENV DATABASE_URL="postgresql://postgres:wUtOrb8QveeoHm8R@db.sattatglqvcwzniomdoe.supabase.co:5432/postgres"
+ENV DATABASE_URL="Your-DB-URl"
 
 # Build application
 RUN cargo install --path .
